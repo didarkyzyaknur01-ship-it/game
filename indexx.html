@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioSim Pro | Desktop Biodiversity Station</title>
+    <style>
+        /* CSS: Desktop-First Premium Design */
+        :root {
+            --sidebar-width: 340px;
+            --primary: #0b2521;
+            --primary-light: #1b4332;
+            --accent: #d4a373;
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --water-ui: #2980b9;
+            --sun-ui: #f39c12;
+            --health-ui: #27ae60;
+            --season-color: #2ecc71; 
+        }
+
+        * { box-sizing: border-box; transition: all 0.3s ease; }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: #1e272e;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        /* Sidebar: Left-anchored Desktop Navigation */
+        aside {
+            width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
+            background: var(--primary);
+            color: white;
+            padding: 40px 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border-right: 6px solid var(--season-color);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .logo-area { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+        .logo-area h2 { margin: 0; font-size: 1.5rem; letter-spacing: -1px; }
+
+        .season-card {
+            background: var(--season-color);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .season-card h3 { margin: 0; text-transform: uppercase; font-size: 1.2rem; }
+
+        /* Bio-Tips Section */
+        .bio-log {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            border-left: 4px solid var(--accent);
+        }
+
+        .bio-log h4 { margin: 0 0 10px 0; color: var(--accent); text-transform: uppercase; font-size: 0.75rem; }
+
+        /* Main Workspace */
+        main {
+            flex: 1;
+            padding: 0;
+            overflow-y: auto;
+            background: radial-gradient(circle at top right, #ffffff, #f0f2f5);
+        }
+
+        .content-wrapper {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end;
+            margin-bottom: 40px; 
+            border-bottom: 2px solid rgba(0,0,0,0.05); 
+            padding-bottom: 20px; 
+        }
+        
+        .header-text h1 { margin: 0; color: var(--primary); font-size: 2.5rem; }
+        .header-text p { margin: 5px 0 0; color: #636e72; }
+
+        /* Desktop Grid */
+        .lab-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            gap: 30px;
+        }
+
+        /* High-Fidelity Plant Cards */
+        .plant-card {
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .plant-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.08); }
+
+        .image-viewport {
+            width: 100%;
+            height: 300px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plant-asset {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+        }
+
+        .wilt { filter: sepia(0.6) brightness(0.9); }
+        .dead { filter: grayscale(1) opacity(0.4); }
+
+        /* Gauges */
+        .gauge-container { display: flex; flex-direction: column; gap: 10px; }
+        .gauge-label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: #4b6584; }
+        .gauge-track { background: #eaeff2; height: 12px; border-radius: 6px; overflow: hidden; }
+        .gauge-bar { height: 100%; transition: width 0.8s cubic-bezier(0.2, 1, 0.3, 1); }
+
+        /* Desktop Button Layout */
+        .button-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .btn {
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .btn-blue { background: var(--water-ui); color: white; }
+        .btn-gold { background: var(--sun-ui); color: white; }
+        .btn:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .btn:disabled { background: #d1d8e0; cursor: not-allowed; }
+
+        .fact-box {
+            background: #f1f8e9;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            border-left: 6px solid var(--primary-light);
+        }
+
+        .species-profile {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            background: #fdfdfd;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px dashed #ddd;
+        }
+
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+
+        main::-webkit-scrollbar { width: 10px; }
+        main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; border: 3px solid var(--bg); }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="logo-area">
+            <h2>BioSim <span style="color:var(--accent)">PRO</span></h2>
+            <p style="font-size: 0.75rem; opacity: 0.6; margin: 5px 0 0;">Ecological Simulation Unit</p>
+        </div>
+
+        <div class="season-card" id="season-container">
+            <small style="opacity: 0.9;">Current Season</small>
+            <h3 id="season-name">Spring</h3>
+        </div>
+
+        <div class="bio-log">
+            <h4>Botanist's Log</h4>
+            <p id="env-tip">Observe how growth rates fluctuate with seasonal light shifts...</p>
+        </div>
+
+        <div class="bio-log">
+            <h4>Current Insight</h4>
+            <p id="bio-insight">Photosynthesis is most efficient when hydration is above 60%.</p>
+        </div>
+
+        <div style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+            <div style="font-size: 0.85rem; margin-bottom: 10px;">
+                <span class="status-dot" style="background: var(--health-ui)"></span> Average Vitality: <span id="integrity">100%</span>
+            </div>
+            <div style="font-size: 0.85rem; opacity: 0.8;">
+                Simulation Clock: <span id="clock">0</span>s
+            </div>
+        </div>
+    </aside>
+
+    <main>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="header-text">
+                    <h1>Biodiversity Monitor</h1>
+                    <p>Advanced real-time tracking of specialized flora ecosystems.</p>
+                </div>
+                <div style="text-align: right; font-weight: 600; color: var(--primary-light);">
+                    ACTIVE SPECIMENS: 4
+                </div>
+            </div>
+
+            <div class="lab-grid" id="plant-grid"></div>
+        </div>
+    </main>
+
+<script>
+    const SEASONS = {
+        SPRING: { name: 'Spring', color: '#2ecc71', decay: { w: 0.4, s: 0.6 }, tip: "Spring: High metabolic activity. Plants recover health faster." },
+        SUMMER: { name: 'Summer', color: '#f1c40f', decay: { w: 1.2, s: 1.5 }, tip: "Summer: Critical transpiration rates. Watch for heat stress." },
+        AUTUMN: { name: 'Autumn', color: '#e67e22', decay: { w: 0.5, s: 0.4 }, tip: "Autumn: Growth slows as plants prepare for dormancy." },
+        WINTER: { name: 'Winter', color: '#3498db', decay: { w: 0.3, s: 0.2 }, tip: "Winter: Minimum sunlight. Maintenance mode is advised." }
+    };
+
+    const BIOLOGICAL_INSIGHTS = [
+        "Transpiration: Plants lose 90% of water through leaf pores (stomata).",
+        "Phototropism: Plants will physically lean toward the light source.",
+        "Root Rot: Over-watering prevents oxygen from reaching the roots.",
+        "Chlorosis: Yellowing leaves often indicate a lack of light or nutrients.",
+        "Xerophytes: Desert plants like cacti open stomata only at night to save water.",
+        "Turgor Pressure: Water inside cells keeps the plant stems upright."
+    ];
+
+    const SPECIES = [
+        {
+            name: "Saguaro Cactus",
+            sci: "Carnegiea gigantea",
+            ideal: { w: 15, s: 95 },
+            imgs: ["images/cactus1.png", "images/cactus2.png", "images/cactus3.png", "images/cactus4.png", "images/cactus5.png"],
+            bio: "Succulent adaptation: stores water in ribs to survive long droughts.",
+            profile: "CAM Photosynthesis: Processes CO2 at night to minimize water loss in extreme heat."
+        },
+        {
+            name: "Sword Fern",
+            sci: "Polystichum munitum",
+            ideal: { w: 85, s: 20 },
+            imgs: ["images/fern1.png", "images/fern2.png", "images/fern3.png", "images/fern4.png", "images/fern5.png"],
+            bio: "Vascular foliage: relies on high humidity and shade for transpiration.",
+            profile: "Spore Reproduction: Unlike flowering plants, ferns use spores located under fronds."
+        },
+        {
+            name: "Garden Tomato",
+            sci: "Solanum lycopersicum",
+            ideal: { w: 60, s: 75 },
+            imgs: ["images/tomato1.png", "images/tomato2.png", "images/tomato3.png", "images/tomato4.png", "images/tomato5.png"],
+            bio: "High nutrient demand: requires strong light for floral development.",
+            profile: "C3 Metabolism: Highly efficient in moderate light but sensitive to drought stress."
+        },
+        {
+            name: "Moth Orchid",
+            sci: "Phalaenopsis",
+            ideal: { w: 40, s: 40 },
+            imgs: ["images/orchid1.png", "images/orchid2.png", "images/orchid3.png", "images/orchid4.png", "images/orchid5.png"],
+            bio: "Epiphytic roots: specialized for air-moisture absorption.",
+            profile: "Velamen Tissue: The white coating on roots acts like a sponge to grab forest humidity."
+        }
+    ];
+
+    class Plant {
+        constructor(config) {
+            this.config = config;
+            this.water = 50;
+            this.sun = 50;
+            this.health = 100;
+            this.growth = 0;
+            this.alive = true;
+        }
+
+        update(season) {
+            if (!this.alive) return;
+
+            const wStress = Math.abs(this.water - this.config.ideal.w);
+            const sStress = Math.abs(this.sun - this.config.ideal.s);
+            const totalStress = (wStress + sStress) / 2;
+
+            if (totalStress > 25) {
+                this.health -= (totalStress / 6);
+            } else {
+                const recoveryBase = (season.name === 'Spring') ? 0.9 : 0.6;
+                this.health = Math.min(100, this.health + recoveryBase);
+                this.growth += 0.4;
+            }
+
+            this.water -= season.decay.w;
+            this.sun -= (1.0 - season.decay.s);
+
+            if (this.health <= 0) { this.health = 0; this.alive = false; }
+            if (this.water < 0) this.water = 0;
+            if (this.sun < 0) this.sun = 0;
+        }
+    }
+
+    class GameEngine {
+        constructor() {
+            this.plants = SPECIES.map(s => new Plant(s));
+            this.seasonKeys = Object.keys(SEASONS);
+            this.seasonIdx = 0;
+            this.ticks = 0;
+            this.init();
+        }
+
+        init() {
+            setInterval(() => this.loop(), 1000);
+            this.render();
+        }
+
+        loop() {
+            this.ticks++;
+            if (this.ticks % 30 === 0) {
+                this.seasonIdx = (this.seasonIdx + 1) % 4;
+            }
+            if (this.ticks % 10 === 0) {
+                const insight = BIOLOGICAL_INSIGHTS[Math.floor(Math.random() * BIOLOGICAL_INSIGHTS.length)];
+                const insightEl = document.getElementById('bio-insight');
+                if (insightEl) insightEl.innerText = insight;
+            }
+
+            const currentSeason = SEASONS[this.seasonKeys[this.seasonIdx]];
+            this.plants.forEach(p => p.update(currentSeason));
+            this.render();
+        }
+
+        render() {
+            const season = SEASONS[this.seasonKeys[this.seasonIdx]];
+            document.documentElement.style.setProperty('--season-color', season.color);
+            document.getElementById('season-name').innerText = season.name;
+            document.getElementById('clock').innerText = this.ticks;
+            document.getElementById('env-tip').innerText = season.tip;
+
+            const grid = document.getElementById('plant-grid');
+            grid.innerHTML = '';
+
+            let totalH = 0;
+
+            this.plants.forEach((p, i) => {
+                totalH += p.health;
+                const stage = Math.min(4, Math.floor(p.growth / 20));
+                const card = document.createElement('div');
+                card.className = 'plant-card';
+                
+                let filter = "";
+                if (!p.alive) filter = "dead";
+                else if (p.health < 40) filter = "wilt";
+
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start">
+                        <div>
+                            <h3 style="margin:0">${p.config.name}</h3>
+                            <small style="color:#95a5a6">${p.config.sci}</small>
+                        </div>
+                        <span style="font-size:0.7rem; font-weight:800; background:#f0f2f5; padding:5px 10px; border-radius:8px">GROWTH PHASE ${stage + 1}</span>
+                    </div>
+
+                    <div class="image-viewport">
+                        <img src="${p.config.imgs[stage]}" class="plant-asset ${filter}" 
+                             onerror="this.src='https://via.placeholder.com/200?text=PHASE+${stage+1}'">
+                    </div>
+
+                    <div class="gauge-container">
+                        ${this.gauge('Hydration', p.water, 'var(--water-ui)')}
+                        ${this.gauge('Luminosity', p.sun, 'var(--sun-ui)')}
+                        ${this.gauge('Vitality', p.health, 'var(--health-ui)')}
+                    </div>
+
+                    <div class="fact-box">
+                        <strong>Bio-Mechanism:</strong> ${p.config.bio}
+                    </div>
+
+                    <div class="species-profile">
+                        <strong>Technical Profile:</strong> ${p.config.profile}
+                    </div>
+
+                    <div class="button-grid">
+                        <button class="btn btn-blue" onclick="engine.interact(${i}, 'w')" ${!p.alive ? 'disabled' : ''}>IRRIGATE</button>
+                        <button class="btn btn-gold" onclick="engine.interact(${i}, 's')" ${!p.alive ? 'disabled' : ''}>ADJUST LIGHT</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById('integrity').innerText = `${Math.round(totalH / 4)}%`;
+        }
+
+        gauge(label, val, color) {
+            return `
+                <div class="gauge-row">
+                    <div class="gauge-label"><span>${label}</span><span>${Math.round(val)}%</span></div>
+                    <div class="gauge-track"><div class="gauge-bar" style="width:${val}%; background:${color}"></div></div>
+                </div>
+            `;
+        }
+
+        interact(idx, type) {
+            const p = this.plants[idx];
+            if (type === 'w') p.water = Math.min(100, p.water + 18);
+            if (type === 's') p.sun = Math.min(100, p.sun + 18);
+            this.render();
+        }
+    }
+
+    const engine = new GameEngine();
+</script>
+</body>
+</html>
